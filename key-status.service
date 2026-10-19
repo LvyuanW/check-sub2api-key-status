@@ -1,0 +1,25 @@
+[Unit]
+Description=Read-only sub2api API key status
+After=network-online.target postgresql.service redis-server.service nginx.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/check-sub2api-key-status
+EnvironmentFile=/etc/key-status/key-status.env
+ExecStart=/usr/bin/python3 /opt/check-sub2api-key-status/service.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

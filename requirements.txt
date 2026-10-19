@@ -1,0 +1,4 @@
+# The deployment uses Ubuntu python3-psycopg2 2.9.2 and python3-redis 3.5.3.
+# These pip packages are an alternative when system packages are unavailable.
+psycopg2-binary>=2.9,<3
+redis>=3.5.3,<8
