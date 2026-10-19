@@ -10,7 +10,7 @@
 <body>
 <main>
   <h1>API Key 数据查询</h1>
-  <p class="muted">sub2api / 只读观测 / 时间：Asia/Shanghai / 金额：USD</p>
+  <p class="muted">sub2api / 只读观测 / 时间：Asia/Shanghai / 金额：¥</p>
   <form id="lookup" method="post" action="/api/check" autocomplete="off">
     <label for="key">API Key</label>
     <input id="key" name="key" type="password" autocomplete="off" spellcheck="false" maxlength="128" required placeholder="粘贴完整 API Key">
@@ -21,14 +21,10 @@
   <p id="message" role="status" aria-live="polite">等待输入。</p>
   <section id="result" hidden>
     <table><caption>观测结果</caption><tbody id="rows"></tbody></table>
-    <table id="windows" hidden><caption>限额窗口（USD）</caption>
+    <table id="windows" hidden><caption>限额窗口（¥）</caption>
       <thead><tr><th>类型</th><th>限额</th><th>已用</th><th>剩余</th><th>下次重置</th></tr></thead><tbody id="window-rows"></tbody>
     </table>
   </section>
-  <hr>
-  <p class="muted">用户钱包由其全部 Key 共享；Key 总额度是额外上限。订阅制请同时看套餐剩余额度。</p>
-  <p class="muted">最后使用时间由主程序记录，约 30 秒防抖；本页查询不会更新它，其他官方鉴权查询可能更新它。累计用量来自保留的用量记录，清理历史记录会影响统计；进行中的请求结算后才计入。</p>
-  <p class="muted">并发为主程序当前记录的此 Key 普通请求及 Live 租约之和，不含空闲 WebSocket 连接；已持有用户槽位、等待上游账号的请求可能计入。异常中断可能等到槽位过期才归零。Key 有效状态只检查状态、时间和总额度，请求还受用户、分组、IP、窗口限额、订阅及上游可用性约束。</p>
 </main>
 </body>
 </html>

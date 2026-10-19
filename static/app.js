@@ -33,14 +33,14 @@ function show(data) {
   row('分组', data.group_name || '未绑定 / 不存在');
   row('分组状态', status(data.group_status));
   row('计费方式', status(data.billing_mode));
-  row('用户共享钱包余额 / USD', money(data.wallet_balance_usd));
-  row('用户共享冻结金额 / USD', money(data.wallet_frozen_usd));
-  row('Key 总额度 / USD', money(data.key_quota_limit_usd));
-  row('Key 额度计数已用 / USD', money(data.key_quota_used_usd));
-  row('Key 剩余额度 / USD', money(data.key_quota_remaining_usd));
+  row('用户共享钱包余额 / ¥', money(data.wallet_balance_usd));
+  row('用户共享冻结金额 / ¥', money(data.wallet_frozen_usd));
+  row('Key 总额度 / ¥', money(data.key_quota_limit_usd));
+  row('Key 额度计数已用 / ¥', money(data.key_quota_used_usd));
+  row('Key 剩余额度 / ¥', money(data.key_quota_remaining_usd));
   row('Key 过期时间', data.expires_at ? time(data.expires_at) : '永不过期');
   row('最后使用时间（约 30 秒防抖）', data.last_used_at ? time(data.last_used_at) : '暂无记录');
-  row('累计已使用额度（保留记录）/ USD', money(data.usage.billed_usd));
+  row('累计已使用额度（保留记录）/ ¥', money(data.usage.billed_usd));
   row('累计请求数（保留记录）', count(data.usage.requests));
   row('已使用 Token 总数', count(data.usage.total_tokens));
   row('输入 Token', count(data.usage.input_tokens));
@@ -52,7 +52,7 @@ function show(data) {
   if (data.subscription) {
     row('订阅状态', status(data.subscription.status));
     row('订阅过期时间', time(data.subscription.expires_at));
-    row('订阅本期最小剩余额度 / USD', money(data.subscription.remaining_usd));
+    row('订阅本期最小剩余额度 / ¥', money(data.subscription.remaining_usd));
   }
   const items = data.rate_windows.map(w => ({...w, label: 'Key / ' + w.window}));
   if (data.subscription) {
