@@ -39,6 +39,8 @@
 服务不修改 Sub2API 的二进制、前后端代码和业务数据。数据库使用仅有指定列 SELECT 权限的 `key_status_ro` 角色；Redis 使用只允许读取对应并发槽位的独立 ACL 用户。
 Sub2API 的普通槽位配置与查询服务的 `KEY_STATUS_SLOT_TTL_SECONDS=1800` 必须同步。
 
+查询页的 🔑 标签页图标使用 HTML 内嵌 SVG。Nginx 仅在查询域名的 `location = /` 中覆盖页面 CSP，在原有策略上添加 `img-src data:`；其余静态资源、接口和后端程序保持原有配置。迁移代理配置时需保留此规则，否则浏览器会拦截图标。
+
 ## 常用操作
 
 ```bash

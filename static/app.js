@@ -26,14 +26,12 @@ function show(data) {
   rows.replaceChildren();
   row('查询时间', time(data.checked_at));
   row('Key 有效状态', status(data.key_effective_status));
-  row('所属用户状态', status(data.user_status));
   row('分组', data.group_name || '未绑定 / 不存在');
-  row('分组状态', status(data.group_status));
   row('余额 / ¥', money(data.wallet_balance_usd));
   row('已使用额度 / ¥', money(data.usage.billed_usd));
   row('Key 过期时间', data.expires_at ? time(data.expires_at) : '永不过期');
   row('最后使用时间（约 30 秒防抖）', data.last_used_at ? time(data.last_used_at) : '暂无记录');
-  row('累计请求数（保留记录）', count(data.usage.requests));
+  row('累计请求数', count(data.usage.requests));
   row('已使用 Token 总数', count(data.usage.total_tokens));
   row('输入 Token', count(data.usage.input_tokens));
   row('输出 Token', count(data.usage.output_tokens));
