@@ -1,6 +1,8 @@
 # 当前服务器部署记录
 
-部署日期：2026-10-20（Asia/Shanghai）。服务器：`8.209.241.20`，Ubuntu 22.04。
+部署日期：2026-10-20（Asia/Shanghai）。当前服务器：`8.211.131.202`，Ubuntu 22.04.5。
+
+本次在新服务器全新安装，未迁移旧服务器的数据库、Redis、用户、Key、服务状态或备份。数据库、Redis、查询服务专用凭据以及 JWT、TOTP 密钥均重新生成；管理员登录名和密码按原部署要求设置。
 
 ## 访问地址
 
@@ -8,9 +10,11 @@
 | --- | --- |
 | Sub2API 主站 | https://tmallmodels.com / https://manyai.icu |
 | 独立 API Key 查询页 | https://key.tmallmodels.com / https://key.manyai.icu |
+| 独立 API Key 管理页 | https://admin.tmallmodels.com / https://admin.manyai.icu |
 
 管理员登录名为 `admin@tmallmodels.com`，密码按部署请求设置，不存放在此仓库。
 管理员首次进入后台需要本人确认 Sub2API 自带的使用声明。
+本次新服务器的声明已由管理员本人完成确认；仅后台模式已开启，用户注册和登录验证码均关闭。
 
 ## Sub2API
 
@@ -22,8 +26,8 @@
 - 环境配置：`/etc/sub2api/sub2api.env`（root:root，0600）
 - systemd：`sub2api.service`；`/etc/systemd/system/sub2api.service.d/override.conf` 设置 `User=root`、`Group=root`。
 - 监听：`127.0.0.1:8080`，由 Nginx 提供 HTTPS、WebSocket 和流式代理。
-- PostgreSQL 16：宿主机 `/var/lib/postgresql/16/main`，仅本机监听。
-- Redis：宿主机 `/var/lib/redis`，开启 AOF，仅本机监听且要求密码。
+- PostgreSQL 16.15：宿主机 `/var/lib/postgresql/16/main`，仅本机监听。
+- Redis 8.10.2：宿主机 `/var/lib/redis`，开启 AOF，仅本机监听且要求密码。
 - 固定保存 JWT 与 TOTP 加密密钥，更新和重启后保留。
 - 并发槽位有效期设置为 `GATEWAY_CONCURRENCY_SLOT_TTL_MINUTES=30`。
 
@@ -44,7 +48,7 @@ Sub2API 的普通槽位配置与查询服务的 `KEY_STATUS_SLOT_TTL_SECONDS=180
 ## 常用操作
 
 ```bash
-systemctl status sub2api key-status nginx postgresql redis-server
+systemctl status sub2api key-status key-management nginx postgresql redis-server
 journalctl -u sub2api -n 100 --no-pager
 journalctl -u key-status -n 100 --no-pager
 systemctl restart sub2api
@@ -56,11 +60,15 @@ Key 查询页更新：将仓库中的应用文件同步到 `/opt/check-sub2api-k
 
 ## HTTPS 与备份
 
-四个域名共用 Let's Encrypt SAN 证书，证书目录 `/etc/letsencrypt/live/tmallmodels.com/`，`certbot.timer` 负责自动续期。
-Nginx 配置：`/etc/nginx/sites-available/sub2api`。
+上表六个域名共用新签发的 Let's Encrypt SAN 证书，证书目录 `/etc/letsencrypt/live/tmallmodels.com/`，`certbot.timer` 负责自动续期。
+Nginx 配置：`/etc/nginx/sites-available/sub2api`、`/etc/nginx/sites-available/key-management`。主站的 `/__keymgr/` 代理到独立管理服务，供其使用对应主站的管理员登录状态。
+
+新服务器解析器仍有部分旧 DNS 缓存，因此 `/etc/hosts` 暂时将这六个域名指向 `8.211.131.202`，确保服务器本机验收访问新站。
+
+已在新服务器实测查询状态、余额、Key 实际消耗、Token、最后使用时间及普通/Live 并发槽位，确认查询不更新最后使用时间；临时查询测试记录已清理。管理服务创建、修改及权限回归也已通过。PostgreSQL、Redis 和三个应用重启后重新核对了权限、登录、页面和运行状态。
 
 每天北京时间 03:20（附加最多两分钟随机延迟），`sub2api-backup.timer` 执行 `/usr/local/sbin/sub2api-backup`。
-备份目录为 `/var/backups/sub2api/`，保留约七天，包含一致性的 PostgreSQL 自定义格式转储、数据库角色、Sub2API 配置、查询服务凭证及代理配置。目录与文件仅 root 可读。
+备份目录为 `/var/backups/sub2api/`，保留约七天，包含 PostgreSQL 自定义格式转储、数据库角色、Sub2API 配置、查询服务凭证、管理服务凭据及固定主密钥、管理映射与幂等状态和代理配置。目录与文件仅 root 可读。
 
 网页更新前可手动备份：
 
